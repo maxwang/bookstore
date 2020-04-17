@@ -2,14 +2,23 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Channels;
+using System.Threading.Tasks;
+using BookStore.Core.Repository;
 
 namespace BookStoreConsole
 {
     public class App
     {
-        public void Run()
+        private readonly IBookStore _bookStore;
+
+        public App(IBookStore bookStore)
         {
-            Console.WriteLine("From App.cs");
+            _bookStore = bookStore ?? throw new ArgumentNullException(nameof(bookStore));
+        }
+        public async Task Run()
+        {
+
+            Console.WriteLine(await Task.FromResult("From App.cs"));
         }
     }
 }

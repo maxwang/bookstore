@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "BookStoreConsole": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "CORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

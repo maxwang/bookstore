@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BookStore.Core.Repository
+namespace BookStore.Data.Repository
 {
-    public class BookStoreDapper : IBookStore
+    public interface IBookStoreData
     {
-
     }
 }
