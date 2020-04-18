@@ -17,6 +17,7 @@ namespace BookStoreConsole
         {
             Book book = new Book
             {
+                BookId = 1,
                 BookName = "Dapper Best Practice",
                 Publisher = new Publisher
                 {
