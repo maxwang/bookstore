@@ -23,7 +23,8 @@ namespace BookStoreConsole
             IServiceCollection services = new ServiceCollection();
 
             var config = LoadConfiguration();
-            services.AddTransient<IBookStoreData, BookStoreSqlServer>();
+            string conStr = config["Data:DefaultConnetion:ConnectionString"];
+            services.AddScoped<IBookStoreData>(c => new BookStoreSqlServer(conStr));
             services.AddTransient<IBookStore, BookStoreService>();
             services.AddTransient<App>();
             return services;
