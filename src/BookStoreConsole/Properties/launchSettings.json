@@ -3,7 +3,7 @@
     "BookStoreConsole": {
       "commandName": "Project",
       "environmentVariables": {
-        "CORE_ENVIRONMENT": "Development"
+        "CORE_ENVIRONMENT": "development"
       }
     }
   }

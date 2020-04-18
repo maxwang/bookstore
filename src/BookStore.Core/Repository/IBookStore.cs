@@ -1,6 +1,8 @@
-﻿using System;
+﻿using BookStore.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace BookStore.Core.Repository
 {
