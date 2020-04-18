@@ -6,5 +6,6 @@ namespace BookStore.Core.Repository
 {
     public interface IBookStore
     {
+        Task<int> InsertBook(Book book);
     }
 }

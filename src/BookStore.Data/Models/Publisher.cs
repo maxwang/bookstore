@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BookStore.Data.Models
 {
-    public interface IBookStoreData
+    public class Publisher
     {
-        Task<int> InsertBook(Book book);
+        public int PublisherId { get; set; }
+        public string Name { get; set; }
     }
 }

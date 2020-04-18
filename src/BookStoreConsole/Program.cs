@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using BookStore.Core.Repository;
-using BookStore.Data.Repository;
+using BookStore.Data.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
