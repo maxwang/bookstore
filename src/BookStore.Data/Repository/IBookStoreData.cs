@@ -8,5 +8,7 @@ namespace BookStore.Data.Models
     public interface IBookStoreData
     {
         Task<int> InsertBook(Book book);
+        Task<int> UpdateBook(int bookId, Book book);
+        Task<bool> AnyBookWithId(int bookId);
     }
 }

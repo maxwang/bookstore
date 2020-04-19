@@ -9,5 +9,6 @@ namespace BookStore.Core.Repository
     public interface IBookStore
     {
         Task<int> InsertBook(Book book);
+        Task<int> UpdateBook(int bookId, Book book);
     }
 }
