@@ -24,6 +24,23 @@ namespace BookStore.Data.Extensions
             return await conn.ExecuteAsync(sql, data, transaction);
         }
 
+        public static async Task<int> UpsertOneToOneSubItem<T>(
+           this IDbConnection conn,
+           T data,
+           string tableName,
+           string primaryKeyColumnName,
+           IDbTransaction transaction = null
+           )
+        {
+            if (data == null)
+            {
+                return 0;
+            }
+
+            var sql = PrepareUpdateSql(data, tableName, primaryKeyColumnName);
+            return await conn.ExecuteAsync(sql, data, transaction);
+        }
+
         public static async Task<int> InsertItem<T>(
             this IDbConnection conn,
             T data,
@@ -45,6 +62,9 @@ namespace BookStore.Data.Extensions
 
             return result;
         }
+
+        public static Task<T> GetAsync<T>(this IDbConnection conn, object id, string tableName, string primaryKeyColumnName) =>
+                conn.QueryFirstOrDefaultAsync<T>($"SELECT * FROM {tableName} WHERE {primaryKeyColumnName} = @id;", new { id });
 
         private static string PrepareUpdateSql(object data, string tableName, string primaryKeyColumnName)
         {

@@ -15,7 +15,7 @@ namespace BookStoreConsole
         }
         public async Task Run()
         {
-            
+            await InsertRecord();
         }
 
         public async Task UpdateReocrd()
@@ -32,7 +32,7 @@ namespace BookStoreConsole
 
             try
             {
-                var bookId = await _bookStore.InsertBook(book);
+                var bookId = await _bookStore.UpdateBook(1, book);
                 Console.WriteLine($"Book inserted: {bookId}:{book.BookName}");
             }
 
