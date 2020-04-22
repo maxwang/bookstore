@@ -31,6 +31,7 @@ namespace BookStore.Data.Models
                 await conn.OpenAsync();
                 using (var transaction = conn.BeginTransaction())
                 {
+                    await conn.InsertItem<IEnumerable<Author>>(book.Authors, "Authors", "Author", transaction);
                     await conn.InsertItem<Publisher>(book.Publisher, "Publishers", "PublisherId", transaction, (pubblisherId) => book.PublisherId = pubblisherId);
                     await conn.InsertItem<Book>(book, "Books", "BookId", transaction, setIdentityInsert: true);
                     transaction.Commit();

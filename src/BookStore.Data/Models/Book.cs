@@ -1,4 +1,7 @@
-﻿namespace BookStore.Data.Models
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace BookStore.Data.Models
 {
     public class Book
     {
@@ -7,5 +10,6 @@
         public int PublisherId { get; set; }
 
         public virtual Publisher Publisher { get; set; }
+        public virtual IEnumerable<Author> Authors { get; set; }
     }
 }

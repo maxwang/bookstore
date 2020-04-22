@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
@@ -109,7 +110,13 @@ namespace BookStore.Data.Extensions
                 return parameters.ParameterNames.ToList();
             }
 
-            if (!paramNameCache.TryGetValue(data.GetType(), out List<string> results))
+            var dataType = data.GetType();
+            if (typeof(IEnumerable).IsAssignableFrom(dataType))
+            {
+                dataType = dataType.GetGenericArguments()[0];
+            }
+
+            if (!paramNameCache.TryGetValue(dataType, out List<string> results))
             {
                 results = data.GetType()
                     .GetProperties(BindingFlags.Instance | BindingFlags.Public)

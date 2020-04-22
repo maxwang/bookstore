@@ -1,6 +1,7 @@
 ﻿using BookStore.Core.Repository;
 using BookStore.Data.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BookStoreConsole
@@ -55,6 +56,21 @@ namespace BookStoreConsole
                 Publisher = new Publisher
                 {
                     Name = "Addison Wesley"
+                },
+                Authors =  new List<Author>
+                {
+                    new Author
+                    {
+                        AuthorId = 1,
+                        BookId = 2,
+                        Name = "John"
+                    },
+                    new Author
+                    {
+                        AuthorId = 2,
+                        BookId = 2,
+                        Name = "Smith"
+                    },
                 }
             };
 
