@@ -61,13 +61,11 @@ namespace BookStoreConsole
                 {
                     new Author
                     {
-                        AuthorId = 1,
                         BookId = 2,
                         Name = "John"
                     },
                     new Author
                     {
-                        AuthorId = 2,
                         BookId = 2,
                         Name = "Smith"
                     },

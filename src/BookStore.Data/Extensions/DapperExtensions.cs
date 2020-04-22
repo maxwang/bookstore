@@ -52,10 +52,10 @@ namespace BookStore.Data.Extensions
             bool setIdentityInsert = false) where T : class
         {
             var sql = PrepareInsertSql(data, tableName, primaryKeyColumnName, setIdentityInsert);
-            int result = await conn.ExecuteScalarAsync<int>(sql, data, transaction);
+            int result = await conn.ExecuteAsync(sql, data, transaction);
             callback?.Invoke(result);
 
-            if (!setIdentityInsert)
+            if (!setIdentityInsert && !(data is IEnumerable))
             {
                 var propertyInfo = data.GetType().GetProperty(primaryKeyColumnName);
                 propertyInfo.SetValue(data, result, null);
@@ -88,7 +88,7 @@ namespace BookStore.Data.Extensions
                 sql.Append($"SET IDENTITY_INSERT {tableName} ON;");
             }
             sql.Append("SET NOCOUNT ON;");
-            sql.Append($"INSERT {tableName} ({cols}) VALUES ({colsParams});");
+            sql.Append($"INSERT INTO {tableName} ({cols}) VALUES ({colsParams});");
             if (setIdentityInsert)
             {
                 sql.Append($"SET IDENTITY_INSERT {tableName} OFF;");
@@ -118,7 +118,7 @@ namespace BookStore.Data.Extensions
 
             if (!paramNameCache.TryGetValue(dataType, out List<string> results))
             {
-                results = data.GetType()
+                results = dataType
                     .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                     .Where(p => IsSimleType(p.PropertyType) && p.GetGetMethod(false) != null)
                     .Select(x => x.Name)
@@ -137,10 +137,12 @@ namespace BookStore.Data.Extensions
                 // nullable type, check if the nested type is simple.
                 return IsSimleType(typeInfo.GetGenericArguments()[0]);
             }
+
             return typeInfo.IsPrimitive
-              || typeInfo.IsEnum
-              || type.Equals(typeof(string))
-              || type.Equals(typeof(decimal));
+                   || typeInfo.IsEnum
+                   || type == typeof(string)
+                   || type == typeof(decimal)
+                   || type == typeof(DateTime);
         }
     }
 }
