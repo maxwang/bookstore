@@ -41,6 +41,26 @@ namespace BookStore.Data.Extensions
             var sql = PrepareUpdateSql(data, tableName, primaryKeyColumnName);
             return await conn.ExecuteAsync(sql, data, transaction);
         }
+        public static async Task<int> Update<T>(this IDbConnection conn,
+            T newData,
+            string tableName,
+            string primaryKeyColumnName,
+            IDbTransaction transaction = null,
+            T oldData = null) where T : class
+        {
+            IList<string> dirtyNames = null;
+            if (oldData != null)
+            {
+                dirtyNames = GetDirtyNamesForUpdate(newData, oldData, primaryKeyColumnName);
+                if (!dirtyNames.Any())
+                {
+                    return 0;
+                }
+            }
+
+            var sql = PrepareUpdateSql(newData, tableName, primaryKeyColumnName, dirtyNames);
+            return await conn.ExecuteAsync(sql, newData, transaction);
+        }
 
         public static async Task<int> InsertItem<T>(
             this IDbConnection conn,
@@ -64,8 +84,27 @@ namespace BookStore.Data.Extensions
             return result;
         }
 
-        public static Task<T> GetAsync<T>(this IDbConnection conn, object id, string tableName, string primaryKeyColumnName) =>
+        public static async Task<bool> DeleteByKey(this IDbConnection conn, int key, string tableName,
+            string keyColumnName, IDbTransaction transaction = null)
+        {
+            var sql = $"DELETE FROM {tableName} WHERE {keyColumnName} = @{keyColumnName};";
+            var deleted = await conn.ExecuteAsync(sql, key, transaction);
+            return deleted > 0;
+        }
+
+        public static Task<T> Get<T>(this IDbConnection conn, object id, string tableName, string primaryKeyColumnName) =>
                 conn.QueryFirstOrDefaultAsync<T>($"SELECT * FROM {tableName} WHERE {primaryKeyColumnName} = @id;", new { id });
+
+        private static string PrepareUpdateSql<T>(T newData, string tableName, string primaryKeyColumnName,
+            IList<string> dirtyNames) where T : class
+        {
+            IEnumerable<string> names = dirtyNames ?? CleanSqlColumns(GetPropertyNames(newData), primaryKeyColumnName, needIdColumn: false);
+            var sql = new StringBuilder();
+            sql.Append($"UPDATE {tableName} SET ");
+            sql.Append(string.Join(",", names.Select(x => $"{x} = @{x}")));
+            sql.Append($" WHERE {primaryKeyColumnName} = @{primaryKeyColumnName};");
+            return sql.ToString();
+        }
 
         private static string PrepareUpdateSql(object data, string tableName, string primaryKeyColumnName)
         {
@@ -120,7 +159,7 @@ namespace BookStore.Data.Extensions
             {
                 results = dataType
                     .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                    .Where(p => IsSimleType(p.PropertyType) && p.GetGetMethod(false) != null)
+                    .Where(p => IsSimpleType(p.PropertyType) && p.GetGetMethod(false) != null)
                     .Select(x => x.Name)
                     .ToList();
 
@@ -128,14 +167,30 @@ namespace BookStore.Data.Extensions
             }
             return results;
         }
+        private static IList<string> GetDirtyNamesForUpdate<T>(T newData, T oldData, string primaryKeyColumnName) where T : class
+        {
+            var type = typeof(T);
+            List<string> results = new List<string>();
+            foreach (var property in type.GetProperties())
+            {
+                if (IsSimpleType(property.PropertyType)
+                    && !property.Name.Equals(primaryKeyColumnName)
+                    && !object.Equals(property.GetValue(newData), property.GetValue(oldData)))
+                {
+                    results.Add(property.Name);
+                }
+            }
 
-        private static bool IsSimleType(Type type)
+            return results;
+        }
+
+        private static bool IsSimpleType(Type type)
         {
             var typeInfo = type.GetTypeInfo();
             if (typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 // nullable type, check if the nested type is simple.
-                return IsSimleType(typeInfo.GetGenericArguments()[0]);
+                return IsSimpleType(typeInfo.GetGenericArguments()[0]);
             }
 
             return typeInfo.IsPrimitive
