@@ -1,10 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
+﻿using BookStore.Core.Models;
 using BookStore.Core.Repository;
 using BookStore.Data.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace BookStoreConsole
 {
@@ -25,6 +26,7 @@ namespace BookStoreConsole
             var config = LoadConfiguration();
             string conStr = config.GetConnectionString("DefaultConnection");
             services.AddScoped<IBookStoreData>(c => new BookStoreSqlServer(conStr));
+            services.Configure<BookStoreOptions>(config.GetSection("BookStoreOptions"));
             services.AddTransient<IBookStore, BookStoreService>();
             services.AddTransient<App>();
             return services;

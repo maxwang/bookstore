@@ -2,17 +2,22 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.Design;
 using System.Text;
 using System.Threading.Tasks;
+using BookStore.Core.Models;
+using Microsoft.Extensions.Options;
 
 namespace BookStore.Core.Repository
 {
     public class BookStoreService : IBookStore
     {
         private readonly IBookStoreData _db;
-        public BookStoreService(IBookStoreData bookStoreData)
+        private readonly BookStoreOptions _options;
+        public BookStoreService(IBookStoreData bookStoreData, IOptions<BookStoreOptions> options)
         {
             _db = bookStoreData ?? throw new ArgumentException(nameof(bookStoreData));
+            _options = options.Value;
         }
 
         public async Task<int> InsertBook(Book book)
